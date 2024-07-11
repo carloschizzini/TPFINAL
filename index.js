@@ -14,12 +14,6 @@ app.get('/', (req, res) => {
 
 app.post('/clientes', async (req, res) => {
     let { nombre, email, password } = await req.body;
-    console.log(nombre)
-    console.log(email)
-    console.log(password)
-    // let nombre = req.params.nombre
-    // let email = req.params.email
-    // let password = req.params.password
     let query = 'INSERT INTO clientes (nombre, email, password) VALUES (?, ?, ?)';
 
     try {
@@ -39,11 +33,23 @@ app.get('/clientes', async (req, res) => {
 app.put('/clientes/:id', async (req, res) => {
     const { nombre } = await req.body
     const id = req.params.id;
-    console.log(id)
-    console.log(nombre)
     let query = 'UPDATE clientes SET nombre = ? WHERE id = ?'
     let [result] = await connection.execute(query, [nombre, id])
     res.status(200).json({ message: `Usuario con id: ${id} actualizado a: ${nombre}` })
+})
+
+app.delete('/clientes/:id', async (req, res) => {
+    const id = req.params.id;
+    let query = 'DELETE FROM clientes WHERE id =?'
+    let [result] = await connection.execute(query, [id])
+    res.status(200).json({ message: `Usuario con id: ${id} eliminado` })
+})
+
+app.get('/carrito/:id', async (req, res) => {
+    const id = req.params.id;
+    let query = 'SELECT T0.idCliente, T1.nombre AS nombreCliente,T1.email, T2.nombre AS nombreProducto, T2.descripcion, T2.precio FROM carritoDeCompras AS T0 INNER JOIN clientes AS T1 ON T0.idCliente = T1.id INNER JOIN productos AS T2 ON T0.idProducto = T2.id WHERE T0.idCarrito=?'
+    let [result] = await connection.execute(query, [id])
+    res.json(result)
 })
 
 const PORT = process.env.PORT || 3000;
