@@ -29,6 +29,12 @@ app.get('/clientes', async (req, res) => {
     let [result] = await connection.execute('SELECT * FROM clientes'); //traes contraseñas y todo (!!!!!)
     res.json(result)
 })
+app.get('/clientes/:id', async (req, res) => {
+    const id = req.params.id;
+    let query = 'SELECT * FROM clientes WHERE id=?'
+    let [result] = await connection.execute(query, [id])
+    res.json(result)
+})
 
 app.put('/clientes/:id', async (req, res) => {
     const { nombre } = await req.body
